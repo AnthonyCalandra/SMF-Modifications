@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE package-info SYSTEM "http://www.simplemachines.org/xml/package-info">
+<package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
+	<id>Project_Evolution:GuestRegistrationNotification</id>
+	<name>Hot Forum Links</name>
+	<version>1.0.1</version>
+	<type>modification</type>
+	
+	<install for="1.1 - 1.99.99">
+        <readme parsebbc="true">readme.txt</readme>
+		<modification>modification_1_1_x.xml</modification>
+		<modification>english.xml</modification>
+        <code>install.php</code>
+        <require-file name="HotForumLinks.template.php" destination="$themedir" />
+        <require-file name="HotForumLinks.php" destination="$sourcedir" />
+        <require-file name="hotlink.png" destination="$themedir/images" />
+		<redirect url="?action=featuresettings;sa=hotforumlinks" type="inline">
+			Please wait while you are being redirected to this modification's configuration settings.
+		</redirect>
+	</install>
+
+	<uninstall for="1.1 - 1.99.99">
+		<modification reverse="true">modification_1_1_x.xml</modification>
+		<modification reverse="true">english.xml</modification>
+        <remove-file name="$themedir/HotForumLinks.template.php" />
+        <remove-file name="$sourcedir/HotForumLinks.php" />
+        <remove-file name="$themedir/images/hotlink.png" />
+	</uninstall>
+</package-info>

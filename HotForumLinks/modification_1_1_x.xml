@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+	<id>Project_Evolution:HotForumLinks</id>
+	<version>1.0</version>
+    
+	<file name="$boarddir/index.php">
+		<operation>
+			<search position="before"><![CDATA[		if (empty($board) && empty($topic))
+		{
+			require_once($sourcedir . '/BoardIndex.php');]]></search>
+			<add><![CDATA[
+            require_once($sourcedir . '/HotForumLinks.php');
+            HotForumLinksIndex();
+]]></add>
+		</operation>
+        
+		<operation>
+			<search position="replace"><![CDATA[		'helpadmin' => array('Help.php', 'ShowAdminHelp'),]]></search>
+			<add><![CDATA[		'helpadmin' => array('Help.php', 'ShowAdminHelp'),
+        'hotforumlinks' => array('HotForumLinks.php', 'HotForumLinks'),]]></add>
+		</operation>
+    </file>
+    
+	<file name="$sourcedir/ManagePermissions.php">
+		<operation>
+			<search position="replace"><![CDATA[		'send_mail',
+	);]]></search>
+			<add><![CDATA[		'send_mail',
+        'add_hot_forum_links',
+	);]]></add>
+		</operation>
+        
+		<operation>
+			<search position="replace"><![CDATA[				'karma_edit' => false,
+			),]]></search>
+			<add><![CDATA[				'karma_edit' => false,
+                'add_hot_forum_links' => false,
+			),]]></add>
+		</operation>
+    </file>
+    
+	<file name="$sourcedir/RemoveTopic.php">
+		<operation>
+			<search position="after"><![CDATA[	// Still topics left to delete?]]></search>
+			<add><![CDATA[    db_query("DELETE FROM {$db_prefix}hot_forum_links
+        WHERE id_topic $condition", __FILE__, __LINE__);
+]]></add>
+		</operation>
+    </file>
+    
+	<file name="$sourcedir/Display.php">
+		<operation>
+			<search position="replace"><![CDATA[		'can_moderate_forum' => 'moderate_forum'
+	);]]></search>
+			<add><![CDATA[		'can_moderate_forum' => 'moderate_forum',
+        'can_add_hot_forum_link' => 'add_hot_forum_links',
+	);]]></add>
+		</operation>
+        
+		<operation>
+			<search position="after"><![CDATA[	// Basic settings.... may be converted over at some point.
+	$context['allow_hide_email'] = !empty($modSettings['allow_hideEmail']) || ($user_info['is_guest'] && !empty($modSettings['guest_hideContacts']));]]></search>
+			<add><![CDATA[
+    $request = db_query("SELECT id_topic
+        FROM {$db_prefix}hot_forum_links
+        WHERE id_topic = $topic", __FILE__, __LINE__);
+    if (mysql_num_rows($request) > 0)
+        $context['hot_forum_links']['is_add'] = false;
+    else
+        $context['hot_forum_links']['is_add'] = true;
+    mysql_free_result($request);
+]]></add>
+		</operation>
+    </file>
+    
+	<file name="$themedir/Display.template.php">
+		<operation>
+			<search position="replace"><![CDATA[		'calendar' => array('test' => 'calendar_post', 'text' => 'calendar37', 'image' => 'linktocal.gif', 'lang' => true, 'url' => $scripturl . '?action=post;calendar;msg=' . $context['topic_first_message'] . ';topic=' . $context['current_topic'] . '.0;sesc=' . $context['session_id']),
+	);]]></search>
+			<add><![CDATA[		'calendar' => array('test' => 'calendar_post', 'text' => 'calendar37', 'image' => 'linktocal.gif', 'lang' => true, 'url' => $scripturl . '?action=post;calendar;msg=' . $context['topic_first_message'] . ';topic=' . $context['current_topic'] . '.0;sesc=' . $context['session_id']),
+        'add_hot_link' => empty($modSettings['enable_hot_forum_links']) ? array('test' => 'modify_hfl_link') : (array('test' => 'can_add_hot_forum_link', 'text' => ($context['hot_forum_links']['is_add'] ? 'hfl_add_hot_link' : 'hfl_remove_hot_link'), 'image' => 'admin_move.gif', 'lang' => true, 'url' => $scripturl . '?action=hotforumlinks;sa=' . ($context['hot_forum_links']['is_add'] ? 'addlink' : 'removelink') . ';topic=' . $context['current_topic'] . '.0')),
+        'modify_hot_link' => empty($modSettings['enable_hot_forum_links']) || $context['hot_forum_links']['is_add'] ? array('test' => 'modify_hfl_link') : array('test' => 'can_add_hot_forum_link', 'text' => 'hfl_modify_hot_link', 'image' => 'admin_move.gif', 'lang' => true, 'url' => $scripturl . '?action=hotforumlinks;sa=modifylink;topic=' . $context['current_topic'] . '.0;from_topic'),
+	);]]></add>
+		</operation>
+    </file>
+    
+	<file name="$sourcedir/MessageIndex.php">
+		<operation>
+			<search position="after"><![CDATA[	// Grab the appropriate topic information...]]></search>
+			<add><![CDATA[
+    $hotForumLinks = array();
+    if (!empty($modSettings['enable_hot_forum_links'])) {
+        $request = db_query("SELECT id_topic
+            FROM {$db_prefix}hot_forum_links", __FILE__, __LINE__);
+        while ($row = mysql_fetch_assoc($request))
+            $hotForumLinks[] = $row['id_topic'];
+        mysql_free_result($request);      
+    }
+]]></add>
+		</operation>
+        
+		<operation>
+			<search position="before"><![CDATA[			determineTopicClass($context['topics'][$row['ID_TOPIC']]);]]></search>
+			<add><![CDATA[
+            if (!empty($modSettings['enable_hot_forum_links'])) {
+                $context['topics'][$row['ID_TOPIC']]['is_hot_link'] =
+                    in_array($row['ID_TOPIC'], $hotForumLinks) && allowedTo('add_hot_forum_links') ? true : false;
+            }
+]]></add>
+		</operation>
+    </file>
+    
+	<file name="$themedir/MessageIndex.template.php">
+		<operation>
+			<search position="before"><![CDATA[							<a href="', $topic['new_href'], '" id="newicon' . $topic['first_post']['id'] . '"><img src="', $settings['images_url'], '/', $context['user']['language'], '/new.gif" alt="', $txt[302], '" /></a>';]]></search>
+			<add><![CDATA[
+            if (!empty($topic['is_hot_link']))
+                echo '<img src="', $settings['default_images_url'], '/hotlink.png" alt="' . $txt['hfl_messageindex'] . '" />';
+]]></add>
+		</operation>
+    </file>
+
+	<file name="$sourcedir/ModSettings.php">
+		<operation>
+			<search position="after"><![CDATA[		'karma' => 'ModifyKarmaSettings',]]></search>
+			<add><![CDATA[
+		'hotforumlinks' => 'ModifyHotForumLinksSettings',]]></add>
+		</operation>
+        
+		<operation>
+			<search position="before"><![CDATA[			'karma' => array(
+				'title' => $txt['smf293'],
+				'href' => $scripturl . '?action=featuresettings;sa=karma;sesc=' . $context['session_id'],
+				'is_last' => true,
+			),]]></search>
+			<add><![CDATA[
+			'hotforumlinks' => array(
+				'title' => $txt['hfl_tab'],
+				'href' => $scripturl . '?action=featuresettings;sa=hotforumlinks;sesc=' . $context['session_id'],
+			),
+]]></add>
+		</operation>
+        
+		<operation>
+			<search position="before"><![CDATA[	require_once($sourcedir . '/ManageServer.php');
+
+	$subActions = array(]]></search>
+			<add><![CDATA[
+		'hotforumlinks' => 'ModifyHotForumLinksSettings',]]></add>
+		</operation>
+		<operation>
+			<search position="end" />
+			<add><![CDATA[function ModifyHotForumLinksSettings() {
+
+	global $txt, $scripturl, $context, $settings, $sc, $modSettings;
+
+	$config_vars = array(
+	   array('check', 'enable_hot_forum_links'),
+	   array('int', 'hfl_per_page'),
+       array('text', 'hfl_custom_title'),
+       array('int', 'hfl_num_index_pages'),
+       '',
+       array('check', 'enable_hfl_left_ad'),
+       array('large_text', 'hfl_left_ad'),
+       array('check', 'enable_hfl_right_ad'),
+       array('large_text', 'hfl_right_ad'),
+	);
+
+	// Saving?
+	if (isset($_GET['save']))
+	{
+		checkSession();
+
+		saveDBSettings($config_vars);
+		writeLog();
+
+		redirectexit('action=featuresettings;sa=hotforumlinks');
+	}
+
+	$context['post_url'] = $scripturl . '?action=featuresettings2;save;sa=hotforumlinks';
+	$context['settings_title'] = '<span style="color: gray; font-weight: normal; font-size: 7pt; float: right;">' . $txt['hfl_admin_creds'] . '</span>';
+
+	prepareDBSettingContext($config_vars);
+}
+
+]]></add>
+		</operation>
+	</file>
+
+</modification>

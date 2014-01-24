@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+	<id>Project_Evolution:HotForumLinks</id>
+	<version>1.0</version>
+	
+	<file name="$languagedir/Modifications.english.php">
+		<operation>
+			<search position="end"><![CDATA[?>]]></search>
+
+            		<add><![CDATA[// Hot Forum Links Modification
+$txt['hfl_admin_creds'] = 'Hot Forum Links by Anthony` - Thanks to Christian Okoye for this idea.';
+$txt['hfl_tab'] = 'Hot Forum Links';
+$txt['enable_hot_forum_links'] = 'Enable Hot Forum Links?';
+$txt['hfl_per_page'] = 'How many links per page?';
+$txt['hfl_not_enabled'] = 'Hot Forum Links has been disabled by the administrator!';
+$txt['add_hot_forum_links'] = 'Add Hot Forum Links';
+$txt['permissionname_add_hot_forum_links'] = 'Add Hot Forum Links';
+$txt['hfl_archive_title'] = 'Hot Forum Links Archive';
+$txt['hfl_page_title'] = 'Viewing the Hot Forum Links Archive';
+$txt['hfl_date_added'] = 'Date Added:';
+$txt['hfl_member_added'] = 'Added by Member:';
+$txt['hfl_topic_title'] = 'Topic Subject:';
+$txt['hfl_add_hot_link'] = 'Add as Hot Link';
+$txt['hfl_already_added'] = 'This hot forum link has already been added!';
+$txt['hfl_modify_hot_link'] = 'Modify Hot Link';
+$txt['hfl_add_link_contents'] = 'Topic id: %d<br />Original title: %s<br /><br />If you wish to change the title, 
+enter a new title in the textbox below.';
+$txt['hfl_modify_link_contents'] = 'Topic id: %d<br />Original title: %s<br /><br />If you wish to change the title, 
+enter a new title in the textbox below.';
+$txt['hfl_submit'] = 'Submit Link';
+$txt['hfl_remove_hot_link'] = 'Remove as Hot Link';
+$txt['hfl_custom_title'] = 'Custom title for index:';
+$txt['hfl_num_index_pages'] = 'Number of pages on index:';
+$txt['hfl_left_ad'] = 'Ad code to display on left side:';
+$txt['hfl_right_ad'] = 'Ad code to display on right side:';
+$txt['enable_hfl_left_ad'] = 'Enable ads on left side?';
+$txt['enable_hfl_right_ad'] = 'Enable ads on right side?';
+$txt['hfl_messageindex'] = 'Hot Forum Link';
+]]></add>
+        	</operation>
+   	</file>
+</modification>
