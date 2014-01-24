@@ -1,0 +1,230 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+	<id>Suki:Membergroup_P</id>
+	<version>1.1</version>
+
+	<file name="$sourcedir/ManageMembergroups.php">
+		<operation>
+			<search position="replace"><![CDATA['params' => array(
+				'regular',
+			),
+		),
+		'columns' => array(]]></search>
+			<add><![CDATA['params' => array(
+				'regular',
+			),
+		),
+		'columns' => array( // Create our column in the list of regular groups
+			'group_prefix' => array(
+				'header' => array(
+					'value' => $txt['prefix'],
+				),
+				'data' => array(
+					'function' => create_function('$rowData', '
+						global $settings;
+
+						$prefix = $rowData[\'group_prefix\'];
+
+						if (empty($prefix))
+							return \'\';
+						else
+						{
+							return $prefix;
+						}
+					'),
+					'class' => 'windowbg',
+					'style' => 'text-align: center; width: 10%;',
+				),
+			),]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA['params' => array(
+				'post_count',
+			),
+		),
+		'columns' => array(]]></search>
+			<add><![CDATA['params' => array(
+				'post_count',
+			),
+		),
+		'columns' => array( // Create our column in the list of post-based groups
+			'group_prefix' => array(
+				'header' => array(
+					'value' => $txt['prefix'],
+				),
+				'data' => array(
+					'function' => create_function('$rowData', '
+						global $settings;
+
+						$prefix = $rowData[\'group_prefix\'];
+
+						if (empty($prefix))
+							return \'\';
+						else
+						{
+							return $prefix;
+						}
+					'),
+					'class' => 'windowbg',
+					'style' => 'text-align: center; width: 10%;',
+				),
+			),]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA['stars' => 'string', 'online_color' => 'string', 'group_type' => 'int',]]></search>
+			<add><![CDATA['stars' => 'string', 'online_color' => 'string', 'group_type' => 'int', 'group_prefix' => 'string',]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA['1#star.gif', '', $_POST['group_type'],]]></search>
+			<add><![CDATA['1#star.gif', '', $_POST['group_type'], '',]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA[stars = {string:stars}
+					WHERE id_group = {int:current_group}',]]></search>
+			<add><![CDATA[stars = {string:stars},
+						group_prefix = {string:group_prefix}
+					WHERE id_group = {int:current_group}',]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA['stars' => $group_info['stars'],]]></search>
+			<add><![CDATA['stars' => $group_info['stars'],
+						'group_prefix' => $group_info['group_prefix'],]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA[// Set variables to their proper value.]]></search>
+			<add><![CDATA[// Set variables to their proper value.
+		$_POST['group_prefix_input'] = isset($_POST['group_prefix_input']) ? $_POST['group_prefix_input'] : '';]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA[SET group_name = {string:group_name}, online_color = {string:online_color},]]></search>
+			<add><![CDATA[SET group_name = {string:group_name}, online_color = {string:online_color}, group_prefix = {string:group_prefix},]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA['stars' => $_POST['stars'],]]></search>
+			<add><![CDATA['stars' => $_POST['stars'],
+				'group_prefix' => $_POST['group_prefix_input'],]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA[SELECT group_name, description, min_posts, online_color, max_messages, stars, group_type, hidden, id_parent]]></search>
+			<add><![CDATA[SELECT group_name, description, min_posts, online_color, max_messages, stars, group_type, hidden, id_parent, group_prefix]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA['star_image' => isset($row['stars'][1]) ? $row['stars'][1] : '',]]></search>
+			<add><![CDATA['star_image' => isset($row['stars'][1]) ? $row['stars'][1] : '',
+		'group_prefix' => isset($row['group_prefix']) ? $row['group_prefix'] : '',]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA[SELECT group_name, description, min_posts, online_color, max_messages, stars, group_type, hidden, id_parent]]></search>
+			<add><![CDATA[SELECT group_name, description, min_posts, online_color, max_messages, stars, group_type, hidden, id_parent, group_prefix]]></add>
+		</operation>
+
+		<operation>
+			<search position="after"><![CDATA[		'editable_name' => htmlspecialchars($row['group_name']),]]></search>
+			<add><![CDATA[		'editable_prefix' => htmlspecialchars($row['group_prefix']),
+]]></add>
+		</operation>
+
+	</file>
+
+	<file name="$sourcedir/Subs-Membergroups.php">
+		<operation>
+			<search position="replace"><![CDATA[SELECT id_group, group_name, min_posts, online_color, stars, 0 AS num_members]]></search>
+			<add><![CDATA[SELECT id_group, group_name, min_posts, online_color, stars, 0 AS num_members, group_prefix]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA['num_members' => $row['num_members'],]]></search>
+			<add><![CDATA['num_members' => $row['num_members'],
+			'group_prefix' => $row['group_prefix'],]]></add>
+		</operation>
+
+	</file>
+
+	<file name="$sourcedir/Load.php">
+
+		<operation>
+			<search position="replace"><![CDATA[pg.online_color AS post_group_color, IFNULL(pg.group_name, {string:blank_string}) AS post_group, mem.is_activated, mem.warning,]]></search>
+			<add><![CDATA[pg.online_color AS post_group_color, IFNULL(pg.group_name, {string:blank_string}) AS post_group, mem.is_activated, mem.warning, mg.group_prefix,]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA[pg.online_color AS post_group_color, IFNULL(pg.group_name, {string:blank_string}) AS post_group, mem.ignore_boards, mem.warning,]]></search>
+			<add><![CDATA[pg.online_color AS post_group_color, IFNULL(pg.group_name, {string:blank_string}) AS post_group, mem.ignore_boards, mem.warning, mg.group_prefix,]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA[SELECT group_name AS member_group, online_color AS member_group_color, stars]]></search>
+			<add><![CDATA[SELECT group_name AS member_group, online_color AS member_group_color, stars, group_prefix]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA['link' => '<a href="' . $scripturl . '?action=profile;u=' . $profile['id_member'] . '" title="' . $txt['profile_of'] . ' ' . $profile['real_name'] . '">' . $profile['real_name'] . '</a>',]]></search>
+			<add><![CDATA['link' => '<span style="font-size: 12px;">' . (!empty($profile['id_group']) ? $profile['group_prefix'] . ' ' : (!empty($profile['id_post_group']) ? $profile['group_prefix'] . ' ' : '')) . '</span>'.'<a href="' . $scripturl . '?action=profile;u=' . $profile['id_member'] . '" title="' . $txt['profile_of'] . ' ' . $profile['real_name'] . '">' . $profile['real_name'] . '</a>',]]></add>
+		</operation>
+
+		<operation>
+			<search position="before"><![CDATA['local_time' => timeformat(time() + ($profile['time_offset'] - $user_info['time_offset']) * 3600, false),
+	);]]></search>
+			<add><![CDATA[
+	// Board Moderators...
+	if (strtolower($memberContext[$user]['group']) == 'moderator') {
+		// What can I say, it was either this or a redundant query
+		$mod_data = cache_get_data('moderator_group_info', 480);
+		$memberContext[$user]['group_prefix'] = '<span style="font-size: 12px;">' . $mod_data['group_prefix'] . '</span> ';
+	}]]></add>
+		</operation>
+
+	</file>
+
+	<file name="$sourcedir/Who.php">
+		<operation>
+			<search position="replace"><![CDATA[		'mods' => array(]]></search>
+			<add><![CDATA[		'mods' => array(
+			'<a href="http://missallsunday.com" target="_blank" title="Free SMF mods">Member Group Prefix mod &copy; Suki</a>',]]></add>
+		</operation>
+	</file>
+
+	<file name="$themedir/ManageMembergroups.template.php">
+		<operation>
+			<search position="replace"><![CDATA[						</dd>';
+	if ($context['undefined_group'])
+	{]]></search>
+			<add><![CDATA[						</dd>
+						<dt>
+							<label for="group_prefix_input"><strong>', $txt['prefix2'], ':</strong></label>
+						</dt>
+						<dd>
+							<input type="text" name="group_prefix_input" id="group_prefix_input" size="30" class="input_text" />
+						</dd>';
+	if ($context['undefined_group'])
+	{]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA[						</dd>';
+
+	if ($context['group']['id'] != 3 && $context['group']['id'] != 4)]]></search>
+			<add><![CDATA[						</dd>
+						<dt>
+							<label for="group_prefix_input"><strong>', $txt['prefix2'], ':</strong></label>
+						</dt>
+						<dd>
+							<input type="text" name="group_prefix_input" id="group_prefix_input" value="', $context['group']['editable_prefix'], '" size="30" class="input_text" />
+						</dd>';
+
+	if ($context['group']['id'] != 3 && $context['group']['id'] != 4)]]></add>
+		</operation>
+	</file>
+</modification>
