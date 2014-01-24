@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+	<id>Project Evolution:TransparentOfflineAvatars</id>
+	<version>1.0</version>
+	
+	<file name="$languagedir/Modifications.english.php">
+		<operation>
+			<search position="end" />
+			<add><![CDATA[
+			$txt['enable_transparent_avatars'] = 'Enable Offline Transparent Avatars?';
+			$txt['transparent_avatars_tab'] = 'Transparent Offline Avatars';
+			$txt['avatar_transparency_level'] = 'Set transparency percentage<div class="smalltext">For example: 20<br />The lower the percentage - the less visible</div>';
+]]></add>
+		</operation>
+	</file>
+
+</modification>

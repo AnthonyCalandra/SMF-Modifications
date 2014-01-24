@@ -1,0 +1,173 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+	<id>Project Evolution:TransparentOfflineAvatars</id>
+	<version>1.1</version>
+	
+	<file name="$sourcedir/Load.php">
+		<operation>
+			<search position="replace"><![CDATA[($profile['id_attach'] > 0 ? '<img class="avatar"]]></search>
+			<add><![CDATA[($profile['id_attach'] > 0 ? '<img ' . (!$profile['is_online'] && !empty($modSettings['enable_transparent_avatars']) ? 'class="avatar avatarOffline"' : 'class="avatar"') . ']]></add>
+		</operation>
+		
+		<operation>
+			<search position="replace"><![CDATA[? '<img class="avatar"]]></search>
+			<add><![CDATA[? '<img ' . (!$profile['is_online'] && !empty($modSettings['enable_transparent_avatars']) ? 'class="avatar avatarOffline"' : 'class="avatar"') . ']]></add>
+		</operation>
+		
+		<operation>
+			<search position="replace"><![CDATA[: '<img class="avatar"]]></search>
+			<add><![CDATA[: '<img ' . (!$profile['is_online'] && !empty($modSettings['enable_transparent_avatars']) ? 'class="avatar avatarOffline"' : 'class="avatar"') . ']]></add>
+		</operation>
+	</file>
+	
+	<file name="$sourcedir/Profile-View.php">
+		<operation>
+			<search position="after"><![CDATA[	// Set a canonical URL for this page.]]></search>
+			<add><![CDATA[
+	if (!empty($modSettings['enable_transparent_avatars'])) {
+		$context['html_headers'] .= '<script type="text/javascript"><!-- // -->]]><![CDATA[<]]><![CDATA[![CDATA[
+			var avatarTransparency = function() {
+				for (var i = 0; i < document.images.length; i++) {
+					var avatarId = document.images[i].className;
+					if (avatarId != \'avatar avatarOffline\')
+						continue;
+					var avatar = document.images[i];
+					// We need to define the alpha channel for IE
+					if (\'filter\' in avatar.style)
+						avatar.style.filter = \'alpha(opacity=100)\';
+					if (\'MozOpacity\' in avatar.style) {
+						avatar.style.MozOpacity = \'0.' . $modSettings['avatar_transparency_level'] . '\';
+					} else if (\'opacity\' in avatar.style) {
+						avatar.style.opacity = \'0.' . $modSettings['avatar_transparency_level'] . '\';
+					} else if (\'alpha\' in avatar.filters) {
+						avatar.filters.alpha.opacity = ' . $modSettings['avatar_transparency_level'] . ';
+					}
+				}
+			}
+			
+			addLoadEvent(avatarTransparency);
+		// ]]]]>><![CDATA[</script>';
+	}
+]]></add>
+		</operation>
+	</file>
+	
+	<file name="$sourcedir/PersonalMessage.php">
+		<operation>
+			<search position="after"><![CDATA[	// Build the linktree for all the actions...]]></search>
+			<add><![CDATA[
+	if (!empty($modSettings['enable_transparent_avatars'])) {
+		$context['html_headers'] .= '<script type="text/javascript"><!-- // -->]]><![CDATA[<]]><![CDATA[![CDATA[
+			var avatarTransparency = function() {
+				for (var i = 0; i < document.images.length; i++) {
+					var avatarId = document.images[i].className;
+					if (avatarId != \'avatar avatarOffline\')
+						continue;
+					var avatar = document.images[i];
+					// We need to define the alpha channel for IE
+					if (\'filter\' in avatar.style)
+						avatar.style.filter = \'alpha(opacity=100)\';
+					if (\'MozOpacity\' in avatar.style) {
+						avatar.style.MozOpacity = \'0.' . $modSettings['avatar_transparency_level'] . '\';
+					} else if (\'opacity\' in avatar.style) {
+						avatar.style.opacity = \'0.' . $modSettings['avatar_transparency_level'] . '\';
+					} else if (\'alpha\' in avatar.filters) {
+						avatar.filters.alpha.opacity = ' . $modSettings['avatar_transparency_level'] . ';
+					}
+				}
+			}
+			
+			addLoadEvent(avatarTransparency);
+		// ]]]]>><![CDATA[</script>';
+	}
+]]></add>
+		</operation>
+	</file>
+	
+	<file name="$sourcedir/Display.php">
+		<operation>
+			<search position="after"><![CDATA[	// Build the link tree.]]></search>
+			<add><![CDATA[
+	if (!empty($modSettings['enable_transparent_avatars'])) {
+		$context['html_headers'] .= '<script type="text/javascript"><!-- // -->]]><![CDATA[<]]><![CDATA[![CDATA[
+			var avatarTransparency = function() {
+				for (var i = 0; i < document.images.length; i++) {
+					var avatarId = document.images[i].className;
+					if (avatarId != \'avatar avatarOffline\')
+						continue;
+					var avatar = document.images[i];
+					// We need to define the alpha channel for IE
+					if (\'filter\' in avatar.style)
+						avatar.style.filter = \'alpha(opacity=100)\';
+					if (\'MozOpacity\' in avatar.style) {
+						avatar.style.MozOpacity = \'0.' . $modSettings['avatar_transparency_level'] . '\';
+					} else if (\'opacity\' in avatar.style) {
+						avatar.style.opacity = \'0.' . $modSettings['avatar_transparency_level'] . '\';
+					} else if (\'alpha\' in avatar.filters) {
+						avatar.filters.alpha.opacity = ' . $modSettings['avatar_transparency_level'] . ';
+					}
+				}
+			}
+			
+			addLoadEvent(avatarTransparency);
+		// ]]]]>><![CDATA[</script>';
+	}
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/ManageSettings.php">
+		<operation>
+			<search position="end" />
+			<add><![CDATA[
+function ModifyTransparentOfflineAvatarsSettings($return_config = false) {
+
+	global $txt, $scripturl, $context, $settings, $sc;
+
+	$config_vars = array(
+		array('check', 'enable_transparent_avatars'),
+		array('int', 'avatar_transparency_level'),
+	);
+
+	if ($return_config)
+		return $config_vars;
+
+	if (isset($_GET['save'])) {
+		checkSession();
+
+		saveDBSettings($config_vars);
+		writeLog();
+
+		redirectexit('action=admin;area=modsettings;sa=transparentofflineavatars');
+	}
+
+	$context['post_url'] = $scripturl . '?action=admin;area=modsettings;save;sa=transparentofflineavatars';
+
+	prepareDBSettingContext($config_vars);
+}
+
+]]></add>
+		</operation>
+	</file>
+	
+	<file name="$sourcedir/Subs.php">
+		<operation>
+			<search position="end" />
+			<add><![CDATA[
+			
+function integrateModifyModificationsTOA($subActions) {
+	$subActions['transparentofflineavatars'] = 'ModifyTransparentOfflineAvatarsSettings';
+}
+			
+function integrateAdminAreasTOA($admin_areas) {
+	
+	global $txt;
+	
+	$admin_areas['config']['areas']['modsettings']['subsections']['transparentofflineavatars'] = array($txt['transparent_avatars_tab']);
+}
+]]></add>
+		</operation>
+	</file>
+
+</modification>

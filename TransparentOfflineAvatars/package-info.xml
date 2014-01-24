@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE package-info SYSTEM "http://www.simplemachines.org/xml/package-info">
+<package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
+	<id>Project_Evolution:TransparentOfflineAvatars</id>
+	<name>Transparent Offline Avatars</name>
+	<version>1.1</version>
+	<type>modification</type>
+
+	<install for="2.0 - 2.99.99">
+		<readme parsebbc="true">readme.txt</readme>
+		<code>install_2.php</code>
+		<modification>modification_2.xml</modification>
+		<modification>portugese.xml</modification>
+		<modification>english.xml</modification>
+		<redirect url="?action=admin;area=modsettings;sa=transparentofflineavatars" type="inline">
+			Please wait while you are being redirected to this modification's configuration settings.
+		</redirect>
+	</install>
+
+	<uninstall for="2.0 - 2.99.99">
+		<code>uninstall_2.php</code>
+		<modification reverse="true">modification_2.xml</modification>
+		<modification reverse="true">english.xml</modification>
+		<modification reverse="true">portugese.xml</modification>
+	</uninstall>
+</package-info>

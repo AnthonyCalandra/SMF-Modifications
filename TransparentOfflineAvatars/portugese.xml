@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+	<id>Project Evolution:TransparentOfflineAvatars</id>
+	<version>1.0</version>
+	
+	<file name="$languagedir/Modifications.portuguese_pt.php" error="skip">
+        <operation>
+        	<search position="end" />
+            <add><![CDATA[
+            $txt['enable_transparent_avatars'] = 'Activar  Avatares Offline transpar&ecirc;nte?';
+            $txt['transparent_avatars_tab'] = 'Avatares Offline transparente';
+            $txt['avatar_transparency_level'] = 'Definir em percentagem a transpar&ecirc;ncia<div class="smalltext">Por examplo: 20<br />O menor percentual - o menos vis&iacute;vel</div>';
+]]></add>
+        </operation>
+    </file>
+    
+    <file name="$languagedir/Modifications.portuguese_pt-utf8.php" error="skip">
+    	<operation>
+    		<search position="end" />
+    		<add><![CDATA[
+            $txt['enable_transparent_avatars'] = 'Activar  Avatares Offline transpar&ecirc;nte?';
+            $txt['transparent_avatars_tab'] = 'Avatares Offline transparente';
+            $txt['avatar_transparency_level'] = 'Definir em percentagem a transpar&ecirc;ncia<div class="smalltext">Por examplo: 20<br />O menor percentual - o menos vis&iacute;vel</div>';
+]]></add>        
+		</operation>    
+	</file>
+
+</modification>
