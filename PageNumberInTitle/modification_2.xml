@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+	<id>Project Evolution:PageNumberInTitle</id>
+	<version>1.0</version>
+	
+	<file name="$sourcedir/Subs.php">
+		<operation>
+			<search position="before"><![CDATA[	// Set some specific vars.
+	$context['page_title_html_safe'] = $smcFunc['htmlspecialchars'](un_htmlspecialchars($context['page_title']));]]></search>
+			<add><![CDATA[
+	// If a page is actually defined on the page, place it in the title
+	if (!empty($context['page_info']['current_page']))
+		$context['page_title_html_safe'] .= ' - ' . $txt['page_num_title'] . $context['page_info']['current_page'];
+]]></add>
+		</operation>
+	</file>
+	
+	<file name="$languagedir/Modifications.english.php">
+		<operation>
+			<search position="end" />
+			<add><![CDATA[
+$txt['page_num_title'] = 'Page ';
+]]></add>
+		</operation>
+	</file>
+
+</modification>
