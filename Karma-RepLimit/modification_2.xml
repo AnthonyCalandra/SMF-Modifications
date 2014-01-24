@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+	<id>Project_Evolution:Karma/Rep_Limit</id>
+	<version>1.0.1</version>
+	
+	<file name="$sourcedir/Karma.php">
+		<operation>
+			<search position="end" />
+			<add><![CDATA[
+function canChangeKarma($memberId, $dir) {
+	
+	global $smcFunc, $modSettings;
+	
+	// If this option is disabled, don't bother
+	if (empty($modSettings['enable_karma_total_max_limit']))
+		return true;
+	
+	// Load some data set for the karma limit
+	$query = $smcFunc['db_query']('',
+		'SELECT karma_good, karma_bad
+		FROM {db_prefix}members
+		WHERE id_member = {int:member}
+		LIMIT 1',
+		array(
+			'member' => $memberId
+		)
+	);
+	// Store the good and bad karma in two variables
+	list($karmaGood, $karmaBad) = $smcFunc['db_fetch_row']($query);
+	$smcFunc['db_free_result']($query);
+	
+	// Applauding (adding) karma?
+	if ($dir == 1) {
+		// Be sure it's within the limit
+		if (($karmaGood - $karmaBad) < $modSettings['karma_total_max_limit']) {
+			return true;
+		} else {
+			fatal_lang_error('karma_total_max_limit_msg', false);
+		}
+	} else { // Or not...
+		// Be sure it's within the limit
+		if (($karmaGood - $karmaBad) > $modSettings['karma_total_min_limit']) {
+			return true;
+		} else {
+			fatal_lang_error('karma_total_min_limit_msg', false);
+		}
+	}
+	
+	return false;
+}
+]]></add>
+		</operation>
+		
+		<operation>
+			<search position="replace"><![CDATA[		// Change by one.
+		updateMemberData($_REQUEST['uid'], array($dir == 1 ? 'karma_good' : 'karma_bad' => '+'));]]></search>
+			<add><![CDATA[		// Change by one.
+		if (canChangeKarma($_REQUEST['uid'], $dir))
+			updateMemberData($_REQUEST['uid'], array($dir == 1 ? 'karma_good' : 'karma_bad' => '+'));]]></add>
+		</operation>
+		
+		<operation>
+			<search position="replace"><![CDATA[		if ($dir == 1)
+			updateMemberData($_REQUEST['uid'], array('karma_good' => '+', 'karma_bad' => '-'));
+		else
+			updateMemberData($_REQUEST['uid'], array('karma_bad' => '+', 'karma_good' => '-'));]]></search>
+			<add><![CDATA[		if ($dir == 1 && canChangeKarma($_REQUEST['uid'], $dir))
+			updateMemberData($_REQUEST['uid'], array('karma_good' => '+', 'karma_bad' => '-'));
+		else if (canChangeKarma($_REQUEST['uid'], $dir))
+			updateMemberData($_REQUEST['uid'], array('karma_bad' => '+', 'karma_good' => '-'));]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/ManageSettings.php">
+		<operation>
+			<search position="before"><![CDATA[			// What does it look like?  [smite]?
+			array('text', 'karmaLabel'),
+			array('text', 'karmaApplaudLabel'),
+			array('text', 'karmaSmiteLabel'),]]></search>
+			<add><![CDATA[		'',
+			array('check', 'enable_karma_total_max_limit'),
+			array('int', 'karma_total_max_limit', '10'),
+			array('int', 'karma_total_min_limit', '-10'),]]></add>
+		</operation>
+	</file>
+	
+</modification>

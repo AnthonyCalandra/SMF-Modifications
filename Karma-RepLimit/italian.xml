@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+	<id>Project_Evolution:Karma/Rep_Limit</id>
+	<version>1.0.1</version>
+        
+	<file name="$languagedir/Modifications.italian.php" error="skip">
+		<operation>
+			<search position="end" />
+			<add><![CDATA[
+// Karma/Rep Limit mod
+$txt['enable_karma_total_max_limit'] = 'Vuoi attivare il limite max del karma?';
+$txt['karma_total_max_limit'] = 'Imposta il limite massimo del karma:';
+$txt['karma_total_min_limit'] = 'Imposta il limite minimo del karma:';
+$txt['karma_total_max_limit_msg'] = 'Questo utente ha raggiunto il livello massimo del karma!';
+$txt['karma_total_min_limit_msg'] = 'Questo utente ha raggiunto il livello minimo del karma!';
+]]></add>
+		</operation>
+	</file>
+        
+</modification>
