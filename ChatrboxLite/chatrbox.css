@@ -1,0 +1,55 @@
+#chatrbox {
+    width: 75%; 
+    margin: 0 auto;
+}
+
+#chatrbox_content_layer {
+    padding: 0px 10px 10px 10px; 
+    margin: 0 auto;
+}
+
+#chatrbox_shout_panel {
+    width: 100%; 
+    text-align: center;
+}
+
+#chatrbox_message_field {
+    width: 85%;
+}
+
+.hr_seperator {
+    margin-top: 10px;
+}
+
+#chatrbox_notice {
+    margin: 5px;
+}
+
+#chatrbox_panels {
+    margin-top: 10px;
+}
+
+#chatrbox_tabs ul {
+    list-style: none; 
+    margin: 0px 5px 0px 5px; 
+    padding: 0px 5px 0px 5px;
+}
+
+#chatrbox_tabs li {
+    display: inline; 
+    padding: 5px 5px 0px 5px; 
+    border-top-left-radius: 5px; 
+    border-top-right-radius: 5px; 
+    background-color: #cacdd3;
+}
+
+#chatrbox_messagebox {
+    max-width: 100%; 
+    overflow: auto; 
+    height: 150px; 
+    background-color: white; 
+    border: 1px solid #7f9db9; 
+    text-align: left; 
+    padding: 0px 5px 0px 5px; 
+    margin: 0px 5px 0px 5px;
+}

@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+    <name>Chatrbox Lite RC1</name>
+    <id>Project_Evolution:ChatrboxLite</id>
+    <version>1.0</version>
+
+    <file name="$sourcedir/ManageSettings.php">
+        <operation>
+            <search position="end" />
+            <add><![CDATA[
+function ModifyChatrboxSettings($return_config = false) {
+
+    global $scripturl, $context;
+
+    $config_vars = array(
+        array('check', 'enableChatrbox'),
+        '',
+        array('check', 'chatrboxEnableBBC'),
+        array('text', 'chatrboxAllowedBBC'),
+        '',        
+        array('check', 'chatrboxShowOnlyIndex'),
+        array('int', 'chatrboxRefreshRate', 20),
+        array('int', 'chatrboxMsgSizeLimit', 20)
+    );
+
+    if ($return_config)
+        return $config_vars;
+
+    if (isset($_GET['save'])) {
+        checkSession();
+
+        saveDBSettings($config_vars);
+        writeLog();
+
+        redirectexit('action=admin;area=modsettings;sa=chatrbox');
+    }
+
+    $context['post_url'] = $scripturl . '?action=admin;area=modsettings;save;sa=chatrbox';
+    $context['settings_title'] = '<span style="color: white; font-weight: normal; font-size: 7pt; float: left;">Chatrbox by Anthony`</span>';
+
+    prepareDBSettingContext($config_vars);
+}
+
+]]>
+            </add>
+        </operation>
+    </file>
+    
+    <file name="$sourcedir/ScheduledTasks.php">
+        <operation>
+            <search position="end" />
+            <add><![CDATA[
+			
+function scheduled_PruneChatrbox() {
+                
+    global $smcFunc;
+    
+    $request = $smcFunc['db_query']('', 
+        'SELECT time_offset, time_regularity, time_unit
+        FROM {db_prefix}scheduled_tasks
+        WHERE task = {string:taskFunction}
+        LIMIT 1', 
+        array(
+            'taskFunction' => 'PruneChatrbox'
+        )
+    );
+
+    list($offset, $regularity, $unit) = $smcFunc['db_fetch_row']($request);
+    $smcFunc['db_free_result']($request);    
+	
+    // Delete shouts older than n time units ago.
+    $smcFunc['db_query']('',
+        'DELETE FROM {db_prefix}chatrbox
+        WHERE message_time < {int:pruneTime}',
+        array(
+            'pruneTime' => time() - (next_time($regularity, $unit, $offset) - time())
+        )
+    );
+                
+    return true;          
+}
+]]>
+            </add>
+        </operation>
+    </file>
+	
+    <file name="$sourcedir/Subs.php">
+        <operation>
+            <search position="end" />
+            <add><![CDATA[
+			
+function integrateChatrboxModifyModifications($subActions) {
+    $subActions['chatrbox'] = 'ModifyChatrboxSettings';
+}
+			
+function integrateChatrboxAdminAreas($admin_areas) {
+	
+    global $txt;
+	
+    $admin_areas['config']['areas']['modsettings']['subsections']['chatrbox'] = array($txt['chatrbox']);
+}
+                
+function integrateChatrboxController($actionArray) {
+    $actionArray['chatrbox'] = array('Chatrbox.php', 'Chatrbox');
+}
+
+// Modified from SMF's code for military time. Thanks!
+function formatMilitaryTime($timeThen) {
+    
+    global $txt;
+    
+    $timeNow = forum_time();
+    $dateThen = getdate($timeThen);
+    $dateNow = getdate($timeNow);
+
+    // Day-of-year is one less and same year, or it's the first of the year and that's the last of the year...
+    if (($dateThen['yday'] == ($dateNow['yday'] - 1) && $dateThen['year'] == $dateNow['year']) || ($dateNow['yday'] == 0 && $dateThen['year'] == $dateNow['year'] - 1) && $dateThen['mon'] == 12 && $dateThen['mday'] == 31)
+        return substr($txt['yesterday'], 0, -3) . date('H:i', $timeThen);      
+    // Same day of the year, same year.... Today!
+    else if ($dateThen['yday'] == $dateNow['yday'] && $dateThen['year'] == $dateNow['year'])
+        return substr($txt['today'], 0, -3) . date('H:i', $timeThen);
+     else // Then it was posted on some day of the week!
+        return $dateThen['weekday'] . ' ' . date('H:i', $timeThen);
+}
+]]>
+            </add>
+        </operation>
+    </file>
+
+</modification>

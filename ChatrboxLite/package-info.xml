@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE package-info SYSTEM "http://www.simplemachines.org/xml/package-info">
+<package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
+    <id>Project_Evolution:ChatrboxLite</id>
+    <name>Chatrbox Lite RC1</name>
+    <version>1.0</version>
+    <type>modification</type>
+
+    <install for="2.0 - 2.99.99">
+        <readme parsebbc="true">readme.txt</readme>
+        <code>install.php</code>
+        <database>install_db.php</database>
+        <modification>modification.xml</modification>
+        <modification>english.xml</modification>
+        <require-file name="Chatrbox-Commands.php" destination="$sourcedir" />
+        <require-file name="Chatrbox.template.php" destination="$themedir" />
+        <require-file name="Chatrbox.php" destination="$sourcedir" />
+        <require-file name="chatrbox.js" destination="$themedir/scripts" />
+        <require-file name="chatrbox.css" destination="$themedir/css" />
+        <redirect url="?action=admin;area=modsettings;sa=chatrbox" type="inline">
+            Please wait while you are being redirected to this modification's configuration settings.
+        </redirect>
+    </install>
+
+    <uninstall for="2.0 - 2.99.99">
+        <code>uninstall.php</code>
+        <modification reverse="true">modification.xml</modification>
+        <modification reverse="true">english.xml</modification>
+        <remove-file name="$sourcedir/Chatrbox-Commands.php" />
+        <remove-file name="$sourcedir/Chatrbox.php" />
+        <remove-file name="$themedir/Chatrbox.template.php" />
+        <remove-file name="$themedir/scripts/chatrbox.js" />
+        <remove-file name="$themedir/css/chatrbox.css" />
+    </uninstall>
+	
+</package-info>

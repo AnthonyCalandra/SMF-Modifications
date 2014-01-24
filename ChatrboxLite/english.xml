@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+    <id>Project_Evolution:ChatrboxLite</id>
+    <version>1.0</version>
+	
+    <file name="$languagedir/Modifications.english.php">
+        <operation>
+            <search position="end"><![CDATA[?>]]>
+            </search>
+
+            <add><![CDATA[
+// Chatrbox
+$txt['chatrbox'] = 'Chatrbox Lite';
+$txt['enableChatrbox'] = 'Enable Chatrbox Lite?';     
+$txt['chatrboxMsgSizeLimit'] = 'Chatrbox message size limit';    
+$txt['chatrboxCommandNotExists'] = 'The command doesn\'t exist!';         
+$txt['chatrboxCommandNotAllowed'] = 'You do not have permission to execute this command!';  
+$txt['chatrboxCommandInvalidArgs'] = 'The command has an invalid number of arguments! This
+ command requires %d arguments.';
+$txt['chatrboxBannedMessage'] = 'You have been banned from the shoutbox!';
+$txt['chatrboxStopSpamming'] = 'Please wait atleast 1 second before posting to prevent spam.';
+$txt['chatrboxSubmitShout'] = 'Submit';
+$txt['chatrboxNotice'] = 'Notice:';
+$txt['chatrboxShoutbox'] = 'Shoutbox';
+$txt['chatrboxNoticeShout'] = 'Notice changed by %s.';
+$txt['chatrboxUnbanById'] = 'This command requires banning members by id!';
+$txt['chatrboxUnbanShout'] = '%s has been unbanned from the shoutbox by %s.';
+$txt['chatrboxBanById'] = 'This command requires banning members by id!';
+$txt['chatrboxBanShout'] = '%s has been banned from the shoutbox by %s.';
+$txt['chatrboxUserAlreadyBanned'] = 'This user is already banned!';
+$txt['chatrboxPruneShout'] = '%s has pruned the shoutbox!';
+$txt['chatrboxMessageTooLong'] = 'Your message is too long. The maximum size is %d characters.';
+$txt['chatrboxRefreshRate'] = 'Refresh Chatrbox every how many milliseconds?';
+$txt['chatrboxShowOnlyIndex'] = 'Show Chatrbox only on the index?';
+$txt['chatrboxEnableBBC'] = 'Enable BB code parsing?';
+$txt['chatrboxAllowedBBC'] = 'Allow which BB code?<br /><span class="smalltext">Seperate each code with commas. Example: url,b,i,u</span>';
+]]>
+            </add>
+        </operation>
+    </file>
+</modification>
