@@ -1,0 +1,983 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+	<id>Project_Evolution:ProfileStatuses</id>
+	<version>3.1</version>
+	
+	<file name="$themedir/Profile.template.php">
+		<operation>
+			<search position="replace"><![CDATA[	echo '
+			</div>
+			<span class="botslice"><span></span></span>
+		</div>
+	</div>
+<div class="clear"></div>
+</div>';
+}]]></search>
+			<add><![CDATA[		echo '
+			</div>
+		<span class="botslice"><span></span></span>
+		</div>
+	</div>';
+	
+	if (!empty($modSettings['profile_statuses_enable']) && $context['member']['profilestatuses']['enabled'] == 0) {
+	
+		echo '<br class="clear" />
+		<br />
+		<div id="detailedinfo">
+			<div class="cat_bar">
+				<h3 class="catbg">
+					<span class="ie6_header floatleft"><img src="', $settings['images_url'], '/icons/profile_sm.gif" alt="" class="icon" />', $txt['profile_statuses'], '</span>
+				</h3>
+			</div>
+			<div class="windowbg2">
+			<span class="topslice"><span></span></span>
+			<div class="content">';
+		
+			if ($context['user']['is_owner']) {
+				echo '<form action="' . $scripturl . '?action=profile;area=poststatus" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);">
+					<div id="bbcBox_message"></div>
+					<div id="smileyBox_message"></div>';
+						
+					// Create our richedit form and appropriate boxes
+					template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
+					template_control_richedit_buttons($context['post_box_name']);
+						
+					echo '<input type="hidden" name="sc" value="' . $context['session_id'] . '" />
+					&nbsp;&nbsp;<label for="locked">' . $txt['statuses_lock_status'] . '	<input type="checkbox" name="locked" value="1" /></label>
+				</form>
+				<dl></dl>';
+			}
+
+			if (isset($context['statuses'])) {
+				$status_count = count($context['statuses']);
+				for ($i = 0; $i < $status_count; $i++) {
+					echo '
+					<dl>
+						<dt>
+							<a href="' . $scripturl . '?action=profile;u=' . $context['statuses'][$i]['member_id'] . '" style="color:' . $context['statuses'][$i]['online_color'] . ';">' . $context['statuses'][$i]['name'] . '</a><div class="smalltext">' . $context['member']['title'] . '<br /><br />' . $context['member']['avatar']['image'] . '<br /></div>
+						</dt>
+						<dd>
+							' . ($context['statuses'][$i]['locked'] > 0 ? '<img src="' . $settings['theme_url'] . '/images/topic/normal_post_locked.gif" alt="" /> ' : '<img src="' . $settings['theme_url'] . '/images/topic/normal_post.gif" alt="" /> ') . '' . parse_bbc($context['statuses'][$i]['post']) . '
+							<span class="botslice"><span></span></span><div class="middletext">' . $context['statuses'][$i]['date'] . ' ';
+							
+				if ($context['user']['is_owner'] || allowedTo('profile_extra_any')) {
+					echo '<a href="' . $scripturl . '?action=profile;area=deletestatus;s=' . $context['statuses'][$i]['status_id'] . ';sesc=' . $context['session_id'] . '" style="font-weight: normal; font-size: 7pt;">' . $txt['statuses_delete'] . '</a> 
+					<a href="' . $scripturl . '?action=profile;area=lockstatus;s=' . $context['statuses'][$i]['status_id'] . ';l=' . $context['statuses'][$i]['locked'] . ';sesc=' . $context['session_id'] . '" style="font-weight: normal; font-size: 7pt;">' . ($context['statuses'][$i]['locked'] == 0 ? $txt['statuses_lock'] : $txt['statuses_unlock']) . '</a>
+					<hr />';
+				}
+							
+				echo '			</div>
+						</dd>
+						<dd>
+							<table width="75%" border="0" cellspacing="0" cellpadding="4" align="left" class="tborder">';
+							if (isset($context['replies'][$i])) {
+								$reply_count = count($context['replies'][$i]);
+								for ($j = 0; $j < $reply_count; $j++) {
+									if ($j & 1) {
+										echo '
+										<tr>
+											<td class="windowbg2" style="max-width: 100%; max-height: 100%;">
+												<div class="smalltext"><a href="' . $scripturl . '?action=profile;u=' . $context['replies'][$i][$j]['member_id'] . '" style="color:' . $context['replies'][$i][$j]['online_color'] . ';">' . $context['replies'][$i][$j]['name'] . '</a> - ' . $context['replies'][$i][$j]['date'] . ' ' . ($context['user']['is_owner'] || allowedTo('profile_extra_any') ? '<a href="' . $scripturl . '?action=profile;area=deletereply;reply=' . $context['replies'][$i][$j]['reply_id'] . ';s=' . $context['statuses'][$i]['status_id'] . ';u=' . $context['statuses'][$i]['member_id'] . ';sesc=' . $context['session_id'] . '" style="font-weight: normal; font-size: 7pt;">' . $txt['statuses_delete'] . '</a>' : '') . '
+												</div><hr />
+												<div style="width: 100%; height: 100%;">' . parse_bbc($context['replies'][$i][$j]['reply']) . '</div>
+											</td>
+										</tr>';
+									} else {
+										echo '
+										<tr>
+											<td class="windowbg" style="max-width: 100%; max-height: 100%;">
+												<div class="smalltext"><a href="' . $scripturl . '?action=profile;u=' . $context['replies'][$i][$j]['member_id'] . '" style="color:' . $context['replies'][$i][$j]['online_color'] . ';">' . $context['replies'][$i][$j]['name'] . '</a> - ' . $context['replies'][$i][$j]['date'] . ' ' . ($context['user']['is_owner'] || allowedTo('profile_extra_any') ? '<a href="' . $scripturl . '?action=profile;area=deletereply;reply=' . $context['replies'][$i][$j]['reply_id'] . ';s=' . $context['statuses'][$i]['status_id'] . ';u=' . $context['statuses'][$i]['member_id'] . ';sesc=' . $context['session_id'] . '" style="font-weight: normal; font-size: 7pt;">' . $txt['statuses_delete'] . '</a>' : '') . '
+												</div><hr />
+												<div style="width: 100%; height: 100%;">' . parse_bbc($context['replies'][$i][$j]['reply']) . '</div>
+											</td>
+										</tr>';
+									}
+								}
+							}
+						
+							echo '
+								</tr><tr><td></td></tr>
+								<tr class="catbg">
+									<th style="text-align: left;"><div class="smalltext"><img src="', $settings['theme_url'], '/images/icons/comment.png" style="display:inline-block;vertical-align: bottom; alt="" class="icon" /> ' . ($context['statuses'][$i]['locked'] == 0 ? '<a href="javascript: void(0);" onclick="activateReplyBox(' . $context['statuses'][$i]['status_id'] . ')">' . $txt['statuses_comment'] . '</a>' : '') . ' - ' . ($context['reply_total'][$i] > 3 ? '<a href="' . $scripturl . '?action=profile;area=showstatus;s=' . $context['statuses'][$i]['status_id'] . '">' . $txt['statuses_view_all'] . ' (' . $context['reply_total'][$i] . ') ' . $txt['statuses_comments']. '</a>' : '') . '</div></th>
+								</tr>
+							
+								<tr>
+									<td id="profile_statuses_replybox' . $context['statuses'][$i]['status_id'] . '" class="windowbg"></td>
+								</tr>
+							</table>
+						</dd>
+					</dl>';
+				}
+			}
+			
+		echo constructPageIndex($scripturl . '?action=profile;u=' . $context['member_id'] . ';status=%d', $context['start'], $context['total'], $context['statuses_per_page'], true);
+		
+		echo '
+			</div>
+			<span class="botslice"><span></span></span>
+			</div>
+		</div>';
+	}
+	
+	echo '<div class="clear"></div></div>';
+}
+
+function template_showStatus() {
+
+	global $context, $txt, $modSettings, $settings, $scripturl;
+	
+	echo '
+		<div id="basicinfo">
+			<div class="windowbg">
+				<span class="topslice"><span></span></span>
+				<div class="content flow_auto">
+					' . $txt['statuses_showing_reply_total_pre'] . '' . ($context['reply_total'] > 0 ? $context['reply_total'] : 0) . '' . $txt['statuses_showing_reply_total_suf'] . '
+				</div>
+				<span class="botslice"><span></span></span>
+			</div>
+		</div>
+		<div id="detailedinfo">
+			<div class="cat_bar">
+				<h3 class="catbg">
+					<span class="ie6_header floatleft"><img src="', $settings['images_url'], '/icons/profile_sm.gif" alt="" class="icon" />', $txt['statuses_showing_status'], '' . $context['status_id'] . '</span>
+				</h3>
+			</div>
+			<div class="windowbg2">
+			<span class="topslice"><span></span></span>
+			<div class="content">
+				<dl>
+					<dt>												
+						<a href="' . $scripturl . '?action=profile;u=' . $context['status']['member_id'] . '" style="color:' . $context['status']['online_color'] . ';">' . $context['status']['name'] . '</a><div class="smalltext">' . $context['member']['title'] . '<br />' . $context['status']['avatar'] . '<br /></div>
+					</dt>
+					<dd>
+						' . ($context['status']['locked'] > 0 ? '<img src="' . $settings['theme_url'] . '/images/topic/normal_post_locked.gif" alt="" /> ' : '<img src="' . $settings['theme_url'] . '/images/topic/normal_post.gif" alt="" /> ') . '' . $context['status']['post'] . '
+						<span class="botslice"><span></span></span><div class="middletext">' . $context['status']['date'] . ' ';
+						
+					if ($context['user']['is_owner'] || allowedTo('profile_extra_any')) {
+						echo '<a href="' . $scripturl . '?action=profile;area=deletestatus;s=' . $context['status']['status_id'] . ';l=' . $context['status']['locked'] . ';sesc=' . $context['session_id'] . '" style="font-weight: normal; font-size: 7pt;">' . $txt['statuses_delete'] . '</a> <a href="' . $scripturl . '?action=profile;area=lockstatus;s=' . $context['status']['status_id'] . ';l=' . $context['status']['locked'] . ';sesc=' . $context['session_id'] . '" style="font-weight: normal; font-size: 7pt;">' . ($context['status']['locked'] == 0 ? $txt['statuses_lock'] : $txt['statuses_unlock']) . '</a>';
+					}
+						
+					echo '	</div>
+					</dd>
+					<dd>
+						<table width="75%" border="0" cellspacing="0" cellpadding="4" align="left" class="tborder">';
+						if (isset($context['replies'])) {
+							$reply_count = count($context['replies']);
+							for ($i = 0; $i < $reply_count; $i++) {
+								if ($i & 1) {
+									echo '
+									<tr>
+										<td class="windowbg2" style="max-width: 100%; max-height: 100%;">
+											<div class="smalltext"><a href="' . $scripturl . '?action=profile;u=' . $context['replies'][$i]['member_id'] . '" style="color:' . $context['replies'][$i]['online_color'] . ';">' . $context['replies'][$i]['name'] . '</a> - ' . $context['replies'][$i]['date'] . ' ' . ($context['user']['is_owner'] || allowedTo('profile_extra_any') ? '<a href="' . $scripturl . '?action=profile;area=deletereply;reply=' . $context['replies'][$i]['reply_id'] . ';s=' . $context['status']['status_id'] . ';u=' . $context['status']['member_id'] . ';sesc=' . $context['session_id'] . '" style="font-weight: normal; font-size: 7pt;">' . $txt['statuses_delete'] . '</a>' : '') . '
+											</div><hr />
+											<div style="width: 100%; height: 100%;">' . parse_bbc($context['replies'][$i]['reply']) . '</div>
+										</td>
+									</tr>';
+								} else {
+									echo '
+									<tr>
+										<td class="windowbg" style="max-width: 100%; max-height: 100%;">
+											<div class="smalltext"><a href="' . $scripturl . '?action=profile;u=' . $context['replies'][$i]['member_id'] . '" style="color:' . $context['replies'][$i]['online_color'] . ';">' . $context['replies'][$i]['name'] . '</a> - ' . $context['replies'][$i]['date'] . ' ' . ($context['user']['is_owner'] || allowedTo('profile_extra_any') ? '<a href="' . $scripturl . '?action=profile;area=deletereply;reply=' . $context['replies'][$i]['reply_id'] . ';s=' . $context['status']['status_id'] . ';u=' . $context['status']['member_id'] . ';sesc=' . $context['session_id'] . '" style="font-weight: normal; font-size: 7pt;">' . $txt['statuses_delete'] . '</a>' : '') . '
+											</div><hr />
+											<div style="width: 100%; height: 100%;">' . parse_bbc($context['replies'][$i]['reply']) . '</div>
+										</td>
+									</tr>';
+								}
+							}
+						}
+						
+						echo '
+								</tr><tr><td></td></tr>
+								<tr class="catbg">
+									<th style="text-align: left;"><div class="smalltext"><img src="' , $settings['theme_url'] , '/images/icons/comment.png" style="display:inline-block;vertical-align: bottom; alt="" class="icon" /> ' . ($context['status']['locked'] == 0 ? '<a href="javascript: void(0);" onclick="activateReplyBox(' . $context['status']['status_id'] . ')">' . $txt['statuses_comment'] . '</a>' : '') . ' - ' . ($context['reply_total'][$i] > 3 ? '<a href="' . $scripturl . '?action=profile;area=showstatus;s=' . $context['status']['status_id'] . '">' . $txt['statuses_view_all'] . ' (' . $context['reply_total'][$i] . ') ' . $txt['statuses_comments']. '</a>' : '') . '</div></th>
+								</tr>
+							
+								<tr>
+									<td id="profile_statuses_replybox' . $context['status']['status_id'] . '" class="windowbg"></td>
+								</tr>
+							</table>
+						</dd>
+					</dl>';
+		
+		echo '
+			</div>
+			<span class="botslice"><span></span></span>
+			</div>
+		</div>';
+	
+	echo '<div class="clear"></div>';
+}
+]]></add>
+		</operation>
+		
+		<operation>
+			<search position="replace"><![CDATA[	echo '
+	<script type="text/javascript" src="', $settings['default_theme_url'], '/scripts/profile.js"></script>';]]></search>
+			<add><![CDATA[	echo '
+	<script type="text/javascript" src="', $settings['default_theme_url'], '/scripts/profile.js"></script>
+	<script type="text/javascript">
+		function activateReplyBox(status_id) {
+			var reply_box = document.getElementById("profile_statuses_replybox" + status_id);
+			reply_box.innerHTML = "<form action=\"' . $scripturl . '?action=profile;area=postreply\" method=\"post\" accept-charset=\"', $context['character_set'], '\"><textarea name=\"reply\" rows=\"4\" style=\"width: 95%; margin: 5px;\"></textarea><input type=\"hidden\" value=\"" + status_id + "\" name=\"s\" /><input type=\"submit\" name=\"submit\" value=\"' . $txt['statuses_submit'] . '\" /></form>";
+		}
+	</script>';]]></add>
+		</operation>
+	</file>
+	
+	<file name="$sourcedir/Profile-View.php">
+		<operation>
+			<search position="after"><![CDATA[	loadCustomFields($memID);
+}]]></search>
+			<add><![CDATA[
+	require_once($sourcedir. '/Subs-Editor.php');
+	$context['post_box_name'] = 'status';
+	$context['show_bbc'] = true;
+	$editorOptions = array(
+		'id' => $context['post_box_name'],
+		'rows' => 10,
+		'columns' => 15,
+      		'value' => '',      
+      		'labels' => array(
+      			'post_button' => $txt['statuses_submit'],  
+      		),      
+      		'form' => 'status',      
+      		'preview_type' => false,
+	);
+	
+	// Create our awesome richedit forms and buttons
+	create_control_richedit($editorOptions);
+	
+	// Determine which statuses to display for use with pagination
+	$context['start'] = !empty($_REQUEST['status']) ? (int) $_REQUEST['status'] : 0;
+	
+	$context['statuses_per_page'] = (int) $modSettings['profile_statuses_limit_pages'];
+	$context['member_id'] = $memID;
+	
+	// Retrieve statuses for the profile being viewed and limit the amount
+	$query = $smcFunc['db_query']('', '
+		SELECT c.id_status, c.id_member, c.reply_count, c.locked, c.post_date, c.post,
+		m.id_member, m.id_group, m.time_offset,
+		g.id_group, g.online_color
+		FROM {db_prefix}log_statuses AS c
+		LEFT JOIN smf_members AS m ON m.id_member = c.id_member
+		LEFT JOIN smf_membergroups AS g ON g.id_group = m.id_group
+		WHERE c.id_member = {int:id_mem}
+		ORDER BY post_date DESC
+		LIMIT {int:start}, {int:limit}',
+		array(
+			'start' => $context['start'], 'id_mem' => $memID, 'limit' => $context['statuses_per_page'],
+		)
+	);
+	
+	$i = 0;
+	while ($row = $smcFunc['db_fetch_assoc']($query)) {
+		$context['statuses'][$i]['status_id'] = $row['id_status'];
+		$context['statuses'][$i]['member_id'] = $row['id_member'];
+		$context['statuses'][$i]['online_color'] = $row['online_color'];
+		$context['statuses'][$i]['name'] = $memberContext[$row['id_member']]['name'];
+		$context['statuses'][$i]['date'] = timeformat($row['post_date']);
+		$context['statuses'][$i]['post'] = un_htmlspecialchars($row['post']);
+		$context['statuses'][$i]['locked'] = $row['locked'];
+		$replies = $row['reply_count'];
+		
+		// Now for the replies! - Undoubtebly slow process?
+		if ($replies > 0) {
+			// Top 3 replies only please! The rest will be saved for another page
+    			$query2 = $smcFunc['db_query']('', '
+				SELECT c.id_reply, c.id_member, c.id_status, c.reply_date, c.reply,
+				m.id_member, m.id_group, m.time_offset,
+				g.id_group, g.online_color
+				FROM {db_prefix}log_status_replies AS c
+				LEFT JOIN smf_members AS m ON m.id_member = c.id_member
+				LEFT JOIN smf_membergroups AS g ON g.id_group = m.id_group
+				WHERE c.id_status = {int:id_stat}
+				ORDER BY reply_date DESC
+				LIMIT 3',
+        			array(
+        				'id_stat' => $row['id_status'],
+        			)
+    			);
+    		
+    			$j = 0;
+    			while ($row2 = $smcFunc['db_fetch_assoc']($query2)) {
+    				loadMemberData($row2['id_member']);
+    				loadMemberContext($row2['id_member']);
+					$context['replies'][$i][$j]['member_id'] = $row2['id_member'];
+    				$context['replies'][$i][$j]['reply_id'] = $row2['id_reply'];
+    				$context['replies'][$i][$j]['online_color'] = $row2['online_color'];
+    				$context['replies'][$i][$j]['name'] = $memberContext[$row2['id_member']]['name'];
+    				$context['replies'][$i][$j]['date'] = timeformat($row2['reply_date']);
+    				$context['replies'][$i][$j]['reply'] = $row2['reply'];
+
+    				$j++;
+    			}
+    		} else {
+    			$context['reply_total'][$i] = 0;
+    			$i++;
+    			continue;
+    		}
+    		
+    		$context['reply_total'][$i] = $replies;
+		$i++;
+	}
+	
+	$smcFunc['db_free_result']($query);
+	
+	// Used to count all the statuses
+    	$query = $smcFunc['db_query']('', '
+        	SELECT *
+        	FROM {db_prefix}log_statuses
+        	WHERE id_member = {int:id_mem}',
+        	array(
+        		'id_mem' => $memID,
+        	)
+    	);
+
+    	$context['total'] = $smcFunc['db_num_rows']($query);
+    	$smcFunc['db_free_result']($query);
+	
+]]></add>
+		</operation>
+		
+		<operation>
+			<search position="after"><![CDATA[// !!! This function needs to be split up properly.
+// Show all posts by the current user]]></search>
+			<add><![CDATA[
+function showStatus($memID) {
+
+	global $context, $smcFunc, $options, $scripturl, $modSettings, $txt, $memberContext, $sourcedir;
+	
+	$context['sub_template'] = 'showStatus';
+	$context['status_id'] = (int) $_GET['s'];
+	
+	require_once($sourcedir. '/Subs-Editor.php');
+	$context['post_box_name'] = 'reply';
+	$context['show_bbc'] = true;
+	$editorOptions = array(
+		'id' => $context['post_box_name'],
+		'rows' => 10,
+		'columns' => 15,
+      		'value' => '',      
+      		'labels' => array(
+      			'post_button' => $txt['statuses_submit'],  
+      		),      
+      		'form' => 'reply',      
+      		'preview_type' => false,
+	);
+	
+	// Create our awesome richedit forms and buttons!
+	create_control_richedit($editorOptions);
+	$context['member_id'] = $memID;
+	
+	// Retrieve the status
+	$query = $smcFunc['db_query']('', '
+		SELECT c.id_status, c.id_member, c.reply_count, c.locked, c.post_date, c.post,
+		m.id_member, m.id_group, m.time_offset,
+		g.id_group, g.online_color
+		FROM {db_prefix}log_statuses AS c
+		LEFT JOIN smf_members AS m ON m.id_member = c.id_member
+		LEFT JOIN smf_membergroups AS g ON g.id_group = m.id_group
+		WHERE id_status = {int:id_status}',
+		array(
+			'id_status' => $context['status_id'],
+		)
+	);
+	
+	$row = $smcFunc['db_fetch_assoc']($query);
+	$context['status']['status_id'] = $row['id_status'];
+	$context['status']['member_id'] = $row['id_member'];
+	$context['status']['online_color'] = $row['online_color'];
+    	loadMemberData($row['id_member']);
+    	loadMemberContext($row['id_member']);
+	$context['status']['name'] = $memberContext[$row['id_member']]['name'];
+	$context['status']['avatar'] = $memberContext[$row['id_member']]['avatar']['image'];
+	$context['status']['date'] = timeformat($row['post_date']);
+	$context['status']['post'] = parse_bbc($row['post']);
+	$context['status']['locked'] = $row['locked'];
+	$smcFunc['db_free_result']($query);
+	
+	// Retrieve the replies to the status
+    	$query = $smcFunc['db_query']('', '
+		SELECT c.id_reply, c.id_member, c.id_status, c.reply_date, c.reply,
+		m.id_member, m.id_group, m.time_offset,
+		g.id_group, g.online_color
+		FROM {db_prefix}log_status_replies AS c
+		LEFT JOIN smf_members AS m ON m.id_member = c.id_member
+		LEFT JOIN smf_membergroups AS g ON g.id_group = m.id_group
+		WHERE c.id_status = {int:id_stat}
+		ORDER BY reply_date DESC',
+        	array(
+        		'id_stat' => $row['id_status'],
+        	)
+    	);
+
+    	$context['reply_total'] = $smcFunc['db_num_rows']($query);	 		
+    	$i = 0;
+    	while ($row = $smcFunc['db_fetch_assoc']($query)) {
+    		$context['replies'][$i]['reply_id'] = $row['id_reply'];
+    		$context['replies'][$i]['member_id'] = $row['id_member'];
+			$context['replies'][$i]['online_color'] = $row['online_color'];
+    		loadMemberData($row['id_member']);
+    		loadMemberContext($row['id_member']);
+    		$context['replies'][$i]['name'] = $memberContext[$row['id_member']]['name'];
+    		$context['replies'][$i]['date'] = timeformat($row['reply_date']);
+    		$context['replies'][$i]['reply'] = $row['reply'];
+    		$i++;
+    	}
+    	
+    	$smcFunc['db_free_result']($query);
+}
+
+]]></add>
+		</operation>
+		
+		<operation>
+			<search position="after"><![CDATA[?>]]></search>
+			<add><![CDATA[
+function disable_status_bbc(&$bbc) {
+
+	global $modSettings;
+	
+	$disabled_bbc = explode(',', $modSettings['disabled_status_bbc']);
+	for ($i = 0; $i < count($disabled_bbc); $i++) {
+		for ($i2 = 0; $i2 < count($bbc[1]); $i2++) {
+			$key = array_search($disabled_bbc[$i], $bbc[1][$i2]);
+			if ($key !== false) {
+				$bbc[1][$i2] = array();
+			}
+		}
+	}
+}
+]]></add>
+		</operation>
+	</file>
+	
+	<file name="$sourcedir/Load.php">
+		<operation>
+			<search position="after"><![CDATA[		'aim' => $profile['aim'] != '' && (empty($modSettings['guest_hideContacts']) || !$user_info['is_guest']) ? array(
+			'name' => $profile['aim'],
+			'href' => 'aim:goim?screenname=' . urlencode(strtr($profile['aim'], array(' ' => '%20'))) . '&amp;message=' . $txt['aim_default_message'],
+			'link' => '<a class="aim" href="aim:goim?screenname=' . urlencode(strtr($profile['aim'], array(' ' => '%20'))) . '&amp;message=' . $txt['aim_default_message'] . '" title="' . $txt['aim_title'] . ' - ' . $profile['aim'] . '"><img src="' . $settings['images_url'] . '/aim.gif" alt="' . $txt['aim_title'] . ' - ' . $profile['aim'] . '" /></a>',
+			'link_text' => '<a class="aim" href="aim:goim?screenname=' . urlencode(strtr($profile['aim'], array(' ' => '%20'))) . '&amp;message=' . $txt['aim_default_message'] . '" title="' . $txt['aim_title'] . ' - ' . $profile['aim'] . '">' . $profile['aim'] . '</a>'
+		) : array('name' => '', 'href' => '', 'link' => '', 'link_text' => ''),]]></search>
+		<add><![CDATA[
+		'profilestatuses' => $profile['profilestatuses'] != '' && (!$user_info['is_guest']) ? array(
+			'name' => $txt['profile_statuses'],
+			'enabled' => $profile['profilestatuses']
+		) : array('name' => '', 'enabled' => ''),
+]]></add>
+		</operation>
+		
+		<operation>
+			<search position="replace"><![CDATA[mem.personal_text, mem.location,]]></search>
+			<add><![CDATA[mem.profilestatuses, mem.personal_text, mem.location,]]></add>
+		</operation>
+		
+		<operation>
+			<search position="replace"><![CDATA[mem.birthdate, mem.icq, mem.aim, mem.yim, mem.msn, mem.posts, mem.last_login, mem.karma_good,]]></search>
+			<add><![CDATA[mem.profilestatuses, mem.birthdate, mem.icq, mem.aim, mem.yim, mem.msn, mem.posts, mem.last_login, mem.karma_good,]]></add>
+		</operation>
+		
+		<operation>
+			<search position="replace"><![CDATA['icq', 'msn', 'aim', 'yim']]></search>
+			<add><![CDATA['profilestatuses', 'icq', 'msn', 'aim', 'yim']]></add>
+		</operation>
+	</file>
+	
+	<file name="$sourcedir/Profile-Modify.php">
+		<operation>
+			<search position="after"><![CDATA[		'personal_text' => array(
+			'type' => 'text',
+			'label' => $txt['personal_text'],
+			'log_change' => true,
+			'input_attr' => array('maxlength="50"'),
+			'size' => 50,
+			'permission' => 'profile_extra',
+		),]]></search>
+			<add><![CDATA[
+		'profilestatuses' => array(
+			'type' => 'check',
+			'enabled' => !empty($modSettings['profile_statuses_enable']),
+			'label' => $txt['profile_statuses_disable'],
+			'subtext' => '',
+			'input_attr' => array('value="1"'),
+			'permission' => 'profile_extra',
+		),
+]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA['hr', 'personal_text', 'hr',]]></search>
+			<add><![CDATA['hr', 'profilestatuses', 'hr', 'personal_text', 'hr',]]></add>
+		</operation>
+	</file>
+	
+	<file name="$sourcedir/Profile.php">
+		<operation>
+			<search position="after"><![CDATA[				'sendpm' => array(
+					'label' => $txt['profileSendIm'],
+					'custom_url' => $scripturl . '?action=pm;sa=send',
+					'permission' => array(
+						'own' => array(),
+						'any' => array('pm_send'),
+					),
+				),]]></search>
+			<add><![CDATA[
+				'postreply' => array(
+					'file' => 'Profile-Actions.php',
+					'function' => 'post_reply',
+					'sc' => 'post',
+					'permission' => array(
+						'own' => 'profile_view_own',
+						'any' => 'profile_view_any',
+					),
+				),
+				'deletereply' => array(
+					'file' => 'Profile-Actions.php',
+					'function' => 'delete_reply',
+					'permission' => array(
+						'own' => 'profile_view_own',
+						'any' => 'profile_view_any',
+					),
+				),
+				'poststatus' => array(
+					'file' => 'Profile-Actions.php',
+					'function' => 'post_status',
+					'sc' => 'post',
+					'permission' => array(
+						'own' => 'profile_view_own',
+						'any' => 'profile_view_any',
+					),
+				),
+				'lockstatus' => array(
+					'file' => 'Profile-Actions.php',
+					'function' => 'lock_status',
+					'permission' => array(
+						'own' => 'profile_view_own',
+						'any' => 'profile_view_any',
+					),
+				),
+				'deletestatus' => array(
+					'file' => 'Profile-Actions.php',
+					'function' => 'delete_status',
+					'permission' => array(
+						'own' => 'profile_view_own',
+						'any' => 'profile_view_any',
+					),
+				),
+]]></add>
+		</operation>
+		
+		<operation>
+			<search position="after"><![CDATA[				'statistics' => array(
+					'label' => $txt['statPanel'],
+					'file' => 'Profile-View.php',
+					'function' => 'statPanel',
+					'permission' => array(
+						'own' => 'profile_view_own',
+						'any' => 'profile_view_any',
+					),
+				),]]></search>
+			<add><![CDATA[				'showstatus' => array(
+					'file' => 'Profile-View.php',
+					'function' => 'showStatus',
+					'enabled' => !empty($modSettings['profile_statuses_enable']),
+					'permission' => array(
+						'own' => array('profile_view_own'),
+						'any' => array('profile_view_any'),
+					),
+				),]]></add>
+		</operation>
+	</file>
+	
+	<file name="$sourcedir/Profile-Actions.php">
+		<operation>
+			<search position="after"><![CDATA[?>]]></search>
+			<add><![CDATA[
+// Post a reply :D
+function post_reply($memID) {
+
+	global $context, $smcFunc, $scripturl, $modSettings, $sourcedir, $user_info, $txt;
+
+	is_not_guest();
+	$status = (int) $_POST['s'];
+	
+	// Retrieve the status to reply on
+	$query = $smcFunc['db_query']('', '
+		SELECT *
+		FROM {db_prefix}log_statuses
+		WHERE id_status = {int:id_stat}',
+		array(
+			'id_stat' => $status,
+		)
+	);
+	
+	// Make sure everything is ok
+	$status_info = $smcFunc['db_fetch_assoc']($query);
+	$smcFunc['db_free_result']($query);
+	if ($status_info['locked'] == 1) {
+		fatal_lang_error('statuses_reply_locked', false);
+		return;
+	}
+
+	$maxlen = $modSettings['profile_statuses_maxlen'];
+	if ($_POST['reply'] == '') {
+		fatal_lang_error('statuses_post_error_short', false);
+		return;
+	}
+	
+	if (strlen($_POST['reply']) > $maxlen) {
+		fatal_lang_error('statuses_post_error_long', false);
+		return;
+	}
+	
+	$reply = sanitize_bbc($smcFunc['htmlspecialchars']($_POST['reply']));
+        $smcFunc['db_insert']('replace', '{db_prefix}log_status_replies',
+            array(
+            	'id_member' => 'int', 'id_status' => 'int', 'reply_date' => 'int', 'reply' => 'string',
+            ), array(
+            	$context['user']['id'], $status, time(), $reply,
+            ), array('id_reply')
+        );
+        
+	$smcFunc['db_query']('', '
+		UPDATE {db_prefix}log_statuses
+		SET reply_count = reply_count + 1
+		WHERE id_status = {int:id_stat}',
+		array(
+			'id_stat' => $status,
+		)
+	);
+        
+        // Used to redirect back to the profile
+	$query = $smcFunc['db_query']('', '
+		SELECT id_member
+		FROM {db_prefix}log_statuses
+		WHERE id_status = {int:id_status}',
+		array(
+			'id_status' => $status,
+		)
+	);
+	   
+	   list($id_member) = $smcFunc['db_fetch_row']($query);
+	
+	// PM SEND Status
+	if ($id_member != $user_info['id'])
+	{
+		
+		// Lookup the user name's
+		$dbresult = $smcFunc['db_query']('', "
+		SELECT 
+			real_name 
+		FROM {db_prefix}members
+		WHERE ID_MEMBER = " . $user_info['id']);
+		$row = $smcFunc['db_fetch_assoc']($dbresult);
+		$smcFunc['db_free_result']($dbresult);
+		
+		$pm_recipients = array(
+						'to' => array($id_member),
+						'bcc' => array(),
+					);
+				
+		require_once($sourcedir . '/Subs-Post.php');
+				
+	
+		$notify_body = $txt['status_body'] . $scripturl . '?action=profile;u=' . $id_member;
+		$notify_body = str_replace("%poster",$row['real_name'],$notify_body);
+		
+		$pm_from = array(
+					'id' => $user_info['id'],
+					'username' => '',
+					'name' => '',
+				);
+				
+		sendpm($pm_recipients,$txt['status_subject'] , $notify_body,false,$pm_from);
+	}
+	
+	redirectexit($scripturl . '?action=profile;u=' . $id_member);
+}
+
+// Delete a reply and make sure its ok to do so
+function delete_reply($memID) {
+
+	global $context, $smcFunc, $scripturl, $modSettings;
+	
+	checkSession('get');
+	$reply = (int) $_GET['reply'];
+	$status = (int) $_GET['s'];
+	$uid = (int) $_GET['u'];
+	$query = $smcFunc['db_query']('', '
+		SELECT id_member
+		FROM {db_prefix}log_status_replies
+		WHERE id_reply = {int:id_reply}',
+		array(
+			'id_reply' => $reply,
+		)
+	);
+	
+	list($id_member) = $smcFunc['db_fetch_row']($query);
+	
+	// Make sure its allowed
+	if ($id_member != $memID && !allowedTo('profile_edit_any')) {
+		fatal_lang_error('replies_post_delete_invalid', false);
+		redirectexit($scripturl . '?action=profile;u=' . $id_member . ';area=summary');
+		return;
+	}
+
+	$query = $smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}log_status_replies
+		WHERE id_reply = {int:id_reply}',
+		array(
+			'id_reply' => $reply,
+		)
+	);
+	
+	$smcFunc['db_query']('', '
+		UPDATE {db_prefix}log_statuses
+		SET reply_count = reply_count - 1
+		WHERE id_status = {int:id_stat}',
+		array(
+			'id_stat' => $status,
+		)
+	);
+	
+	redirectexit($scripturl . '?action=profile;u=' . $uid . ';area=summary;updated');
+}
+
+// Lock a status and make sure its ok to do so
+function lock_status($memID) {
+
+	global $context, $smcFunc, $scripturl, $modSettings;
+	
+	checkSession('get');
+	$status = (int) $_GET['s'];
+	$get_locked = (int) $_GET['l'];
+	
+	// Retrieve the given status
+	$query = $smcFunc['db_query']('', '
+		SELECT id_member
+		FROM {db_prefix}log_statuses
+		WHERE id_status = {int:id_stat}',
+		array(
+			'id_stat' => $status,
+		)
+	);
+	
+	list($id_member) = $smcFunc['db_fetch_row']($query);
+	$smcFunc['db_free_result']($query);
+	
+	// Make sure they are allowed to lock it
+	if ($id_member != $memID && !allowedTo('profile_edit_any')) {
+		fatal_lang_error('statuses_post_lock_invalid', false);
+		redirectexit($scripturl . '?action=profile;u=' . $id_member . ';area=summary');
+		return;
+	}
+	
+	$is_locked = ($get_locked == 0 ? 1 : 0);
+	$query = $smcFunc['db_query']('', '
+		UPDATE {db_prefix}log_statuses
+		SET locked = {int:is_locked}
+		WHERE id_status = {int:id_stat}',
+		array(
+			'is_locked' => $is_locked, 'id_stat' => $status,
+		)
+	);
+	
+	redirectexit($scripturl . '?action=profile;u=' . $id_member . ';area=summary;updated');
+}
+
+// Delete statuses and make sure its ok to do so
+function delete_status($memID) {
+
+	global $context, $smcFunc, $scripturl, $modSettings;
+	
+	checkSession('get');
+	$status = (int) $_GET['s'];
+	
+	// Retrieve the given status
+	$query = $smcFunc['db_query']('', '
+		SELECT id_member
+		FROM {db_prefix}log_statuses
+		WHERE id_status = {int:id_stat}',
+		array(
+			'id_stat' => $status,
+		)
+	);
+	
+	// I know n the query it says id_topic, however it makes it easier to have the actual message id rather than topic
+	list($id_member) = $smcFunc['db_fetch_row']($query);
+	$smcFunc['db_free_result']($query);
+	
+	// Make sure they are allowed to delete it
+	if ($id_member != $memID && !allowedTo('profile_edit_any')) {
+		fatal_lang_error('statuses_post_delete_invalid', false);
+		redirectexit($scripturl . '?action=profile;u=' . $id_member . ';area=summary');
+		return;
+	}
+	
+	$query = $smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}log_statuses
+		WHERE id_status = {int:id_stat}',
+		array(
+			'id_stat' => $status,
+		)
+	);
+	
+	$query = $smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}log_status_replies
+		WHERE id_status = {int:id_stat}',
+		array(
+			'id_stat' => $status,
+		)
+	);
+	
+	redirectexit($scripturl . '?action=profile;u=' . $id_member . ';area=summary;updated');
+}
+
+// Post our status and make sure its alright to do so
+function post_status($memID) {
+
+	global $context, $smcFunc, $scripturl, $modSettings, $sourcedir;
+	
+	if ($context['user']['id'] != $memID)
+		redirectexit($scripturl . '?action=profile;area=summary');
+			
+	$maxlen = $modSettings['profile_statuses_maxlen'];	
+	if ($_POST['status'] == '') {
+		fatal_lang_error('statuses_post_error_short', false);
+		return;
+	}
+	
+	if (strlen($_POST['status']) > $maxlen) {
+		fatal_lang_error('statuses_post_error_long', false);
+		return;
+	}
+	
+	$is_locked = (isset($_POST['locked']) ? 1 : 0);
+	$post = sanitize_bbc($smcFunc['htmlspecialchars']($_POST['status']));
+	
+    $smcFunc['db_insert']('replace', '{db_prefix}log_statuses',
+        array(
+            'reply_count' => 'int', 'locked' => 'int', 'id_member' => 'int', 'post_date' => 'int', 'post' => 'string',
+        ), array(
+            0, $is_locked, $memID, time(), $post,
+        ), array('id_status')
+    );
+	
+	redirectexit($scripturl . '?action=profile;u=' . $memID . ';area=summary;updated');
+}
+
+// We make sure no unwanted BB code is present
+function sanitize_bbc($message) {
+
+	global $modSettings;
+	
+	$disabled_bbc = explode(',', $modSettings['disabled_status_bbc']);
+	for ($i = 0; $i < count($disabled_bbc); $i++) {
+		$bbc = '[' . $disabled_bbc[$i] . ']';
+		$message = str_ireplace($bbc, '', $message);
+		$bbc = '[/' . $disabled_bbc[$i] . ']';
+		$message = str_ireplace($bbc, '', $message);
+	}
+	
+	return $message;
+}
+
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/Admin.php">
+		<operation>
+			<search position="after"><![CDATA[						// Mod Authors for a "ADD AFTER" on this line. Ensure you end your change with a comma. For example:]]></search>
+			<add><![CDATA[
+						'profilestatuses' => array($txt['profile_statuses']),]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/ManageSettings.php">
+		<operation>
+			<search position="after"><![CDATA[		// Mod authors, once again, if you have a whole section to add do it AFTER this line, and keep a comma at the end.]]></search>
+			<add><![CDATA[
+
+		'profilestatuses' => 'ModifyProfileStatusSettings',]]></add>
+		</operation>
+		<operation>
+			<search position="end" />
+			<add><![CDATA[
+function ModifyProfileStatusSettings($return_config = false) {
+
+	global $txt, $scripturl, $context, $settings, $sc;
+
+	$config_vars = array(
+		array('check', 'profile_statuses_enable'),
+		'',
+		array('int', 'profile_statuses_limit_pages'),
+		array('int', 'profile_statuses_maxlen'),
+	);
+
+	if ($return_config)
+		return $config_vars;
+
+	if (isset($_GET['save'])) {
+		checkSession();
+
+		saveDBSettings($config_vars);
+		writeLog();
+
+		redirectexit('action=admin;area=modsettings;sa=profilestatuses');
+	}
+
+	$context['post_url'] = $scripturl . '?action=admin;area=modsettings;save;sa=profilestatuses';
+	$context['settings_title'] = '';
+
+	prepareDBSettingContext($config_vars);
+}
+
+]]></add>
+		</operation>
+	</file>
+	
+	<file name="$boarddir/SSI.php">
+		<operation>
+			<search position="end" />
+			<add><![CDATA[
+// Return an array of the latest profile statuses
+function ssi_retrieveLatestStatuses($num_statuses = 10, $output_method = 'echo') {
+
+	global $smcFunc;
+
+	$statuses = array();
+	// Retrieved latest statuses by post_date
+	$query = $smcFunc['db_query']('', '
+		SELECT *
+		FROM {db_prefix}log_statuses
+		ORDER BY post_date DESC
+		LIMIT {int:limit}',
+		array(
+			'limit' => $num_statuses,
+		)
+	);
+	
+	while ($row = $smcFunc['db_fetch_assoc']($query)) {
+		$statuses[] = array(
+			'id_status' => $row['id_status'],
+			'id_member' => $row['id_member'],
+			'reply_count' => $row['reply_count'],
+			'locked' => $row['locked'],
+			'post_date' => timeformat($row['post_date']),
+			'post' => $row['post'],
+		);
+	}
+	
+	if ($output_method != 'echo')
+		return $statuses;
+		
+	print_r($statuses);
+}
+
+]]></add>
+		</operation>
+	</file>
+
+</modification>

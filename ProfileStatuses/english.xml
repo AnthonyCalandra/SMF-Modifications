@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+	<id>Project_Evolution:ProfileStatuses</id>
+	<version>3.1</version>
+	
+	<file name="$languagedir/Profile.english.php">
+		<operation>
+			<search position="end"><![CDATA[?>]]></search>
+
+            		<add><![CDATA[
+	$txt['profile_statuses'] = 'Profile Statuses';
+	$txt['update_status_text'] = 'Update your status: ';
+	$txt['statuses_lock_status'] = 'Lock status? ';
+	$txt['statuses_showing_status'] = 'Showing Status ID: ';
+	$txt['statuses_showing_status_reply'] = 'Reply to status: ';
+	$txt['statuses_showing_reply_total_pre'] = 'There is a total of: <strong>';
+	$txt['statuses_showing_reply_total_suf'] = '</strong> replies.';
+	$txt['statuses_delete'] = '[Delete]';
+	$txt['statuses_lock'] = '[Lock]';
+	$txt['statuses_unlock'] = '[Unlock]';
+	$txt['statuses_comment'] = 'Comment';
+	$txt['statuses_comments'] = 'Comments';
+	$txt['statuses_view_all'] = 'View All';
+	$txt['statuses_submit'] = 'Submit';
+	$txt['status_subject'] = 'You have a new status reply!';
+	$txt['status_body']  = "%poster Has commnted on your status!\n Check it out: ";
+]]></add>
+        	</operation>
+   	</file>
+   	
+	<file name="$languagedir/Errors.english.php">
+		<operation>
+			<search position="end"><![CDATA[?>]]></search>
+
+            		<add><![CDATA[
+            		
+	$txt['statuses_post_error_short'] = 'Your message is too short, please try again.';
+	$txt['statuses_post_error_long'] = 'Your message is too long, please try again.';
+	$txt['statuses_post_delete_invalid'] = 'Invalid status, this can be due to several reasons such as attempting to delete another
+member\'s or non-existing status.';
+	$txt['statuses_post_lock_invalid'] = 'Invalid status, this can be due to several reasons such as attempting to lock another
+member\'s or non-existing status.';
+	$txt['replies_post_delete_invalid'] = 'Invalid reply ID, this can be due to several reasons such as attempting to delete another
+member\'s or non-existing reply.';
+	$txt['statuses_reply_locked'] = 'You cannot reply to a locked status!';
+]]></add>
+        	</operation>
+   	</file>
+   	
+	<file name="$languagedir/Modifications.english.php">
+		<operation>
+			<search position="end"><![CDATA[?>]]></search>
+
+            		<add><![CDATA[
+    $txt['profile_statuses'] = 'Profile Statuses';
+	$txt['profile_statuses_enable'] = 'Enable Profile Statuses?';
+	$txt['profile_statuses_disable'] = 'Disable Profile Statuses?';
+	$txt['profile_statuses_limit_pages'] = 'Display statuses per page';
+	$txt['profile_statuses_maxlen'] = 'Set max length of messages';
+]]></add>
+        	</operation>
+   	</file>
+
+</modification>
