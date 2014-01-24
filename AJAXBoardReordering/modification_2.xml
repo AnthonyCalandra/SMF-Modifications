@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+	<id>Project Evolution:AJAXBoardReordering</id>
+	<version>2.0</version>
+	
+	<file name="$languagedir/Modifications.english.php">
+		<operation>
+			<search position="end" />
+			<add><![CDATA[$txt['reorder_boards_success'] = 'Successfully moved board.';
+$txt['category_confirm_text'] = 'Are you sure you wish to move this board to a new category?';
+$txt['enable_ajax_reorder'] = 'Enable AJAX board reordering?';]]></add>
+		</operation>
+	</file>
+    
+	<file name="$sourcedir/Subs.php">
+		<operation>
+			<search position="end" />
+			<add><![CDATA[
+function integrateReorderBoardsSettings($config_vars) {
+    $config_vars[] = '';
+    $config_vars[] = array('check', 'enable_ajax_reorder');
+}
+]]></add>
+		</operation>
+	</file>
+    
+	<file name="$sourcedir/BoardIndex.php">
+		<operation>
+			<search position="after"><![CDATA[	// Retrieve the categories and boards.]]></search>
+			<add><![CDATA[
+   if (allowedTo('manage_boards') && !empty($modSettings['enable_ajax_reorder']))
+	   $context['html_headers'] .= '
+        <script type="text/javascript">
+	    if (!window.jQuery) {
+		document.write(unescape(\'%3Cscript src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"%3E%3C/script%3E\'));
+		document.write(unescape(\'%3Cscript src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"%3E%3C/script%3E\'));
+	    }
+        </script>
+        <script type="text/javascript" src="' . $settings['default_theme_url'] . '/scripts/ajaxBoardReordering.js"></script>
+        <script type="text/javascript"><!-- // --><![CDATA[<]]><![CDATA[![CDATA[
+            $(document).ready(function() {
+                $("#boardindex_table .content").smfAjaxBoardReordering({
+                    "successText" : ' . JavaScriptEscape($txt['reorder_boards_success']) . ',
+		    "categoryConfirmText" : ' . JavaScriptEscape($txt['category_confirm_text']) . ',
+                });
+            });// ]]]]><![CDATA[></script>';
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/Xml.php">
+		<operation>
+			<search position="before"><![CDATA[		'messageicons' => array(
+			'function' => 'ListMessageIcons',
+		),]]></search>
+			<add><![CDATA[		'reorderboards' => array(
+			'function' => 'ajaxReorderBoards',
+		),]]></add>
+		</operation>
+		<operation>
+			<search position="end" />
+			<add><![CDATA[
+function ajaxReorderBoards() {
+    
+    global $sourcedir, $context, $modSettings;
+    
+    $context['sub_template'] = 'reorderboards_xml';
+    // Be sure we are allowed to be here and actually have usable data
+    if (!allowedTo('manage_boards') || empty($modSettings['enable_ajax_reorder']) || 
+        (isset($_REQUEST['boardId']) && $_REQUEST['boardId'] <= 0)) {
+            $context['result'] = 0;
+            return;
+    }
+
+    require_once($sourcedir . '/Subs-Boards.php');
+    $boardOptions = array(
+        'move_first_child' => true,
+    );
+    // If the index is 0, there was no previous board which means its going to the top
+    // Other than that, make sure data is usable
+    if ((isset($_REQUEST['index']) && $_REQUEST['index'] == 0) && 
+        (isset($_REQUEST['targetCategoryId']) && $_REQUEST['targetCategoryId'] >= 0)) {
+            $boardOptions['move_to'] = 'top';
+            $boardOptions['target_category'] = $_REQUEST['targetCategoryId'];
+    } elseif (isset($_REQUEST['prevBoardId']) && $_REQUEST['prevBoardId'] >= 0) {
+        $boardOptions['move_to'] = 'after';
+        $boardOptions['target_board'] = $_REQUEST['prevBoardId'];
+    // Nothing was usable here, so quit immediately
+    } else {
+        $context['result'] = 0;
+        return;
+    }
+
+    modifyBoard($_REQUEST['boardId'], $boardOptions);
+    // We were successful, send back a simple message
+    $context['result'] = 1;
+}]]></add>
+		</operation>
+	</file>
+
+	<file name="$themedir/Xml.template.php">
+		<operation>
+			<search position="end" />
+			<add><![CDATA[
+function template_reorderboards_xml() {
+    
+	global $context;
+
+	echo '<', '?xml version="1.0" encoding="', $context['character_set'], '"?', '>
+<smf>
+	<reorderBoards>', cleanXml($context['result']), '</reorderBoards>
+</smf>';
+}
+]]></add>
+		</operation>
+	</file>
+</modification>

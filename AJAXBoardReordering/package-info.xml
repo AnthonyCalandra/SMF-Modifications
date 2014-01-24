@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE package-info SYSTEM "http://www.simplemachines.org/xml/package-info">
+<package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
+	<id>Project_Evolution:AJAXBoardReordering</id>
+	<name>AJAX Board Reordering</name>
+	<version>2.0</version>
+	<type>modification</type>
+
+	<install for="2.0 - 2.0.99">
+		<readme parsebbc="true">readme.txt</readme>
+		<code>install.php</code>
+		<modification>modification_2.xml</modification>
+		<require-file name="ajaxBoardReordering.js" destination="$themedir/scripts" />
+		<redirect url="?action=admin;area=modsettings;sa=general" type="inline">
+			Please wait while you are being redirected to this modification's configuration settings.
+		</redirect>
+	</install>
+
+	<uninstall for="2.0 - 2.0.99">
+		<code>uninstall.php</code>
+		<modification reverse="true">modification_2.xml</modification>
+		<remove-file name="$themedir/scripts/ajaxBoardReordering.js" />
+	</uninstall>
+</package-info>
